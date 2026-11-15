@@ -1,0 +1,11 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';
+import {retrieve,help,validateRequest} from '../rag.mjs';import {simulate,INITIAL} from '../engine.mjs';
+const req={strategy:'conserve',intent:'hint',phase:'before',rulesVersion:'aurora-educational-1'};
+test('retrieves radiation evidence for external exposure',()=>assert.equal(retrieve('radiação exposição proteção')[0].id,'radiation'));
+test('unknown topic does not fabricate evidence',()=>assert.equal(retrieve('criptomoeda futebol').length,0));
+test('simulation has real tradeoffs',()=>{assert.ok(simulate('conserve').energy>simulate('reserve').energy);assert.ok(simulate('conserve').food<simulate('reserve').food);assert.ok(simulate('repair').radiation>simulate('reserve').radiation);assert.equal(INITIAL.energy,65);});
+test('invalid actions are rejected',()=>assert.throws(()=>validateRequest({...req,strategy:'disable_support'})));
+test('invented expectation is rejected',()=>assert.throws(()=>validateRequest({...req,expectation:'unknown_resource'})));
+test('local help clearly identifies its mode and references',async()=>{const a=await help(req,{env:{}});assert.equal(a.mode,'reviewed-local');assert.ok(a.citations.length);assert.ok(!a.text.includes('58'));});
+test('backend recomputes outcome rather than trusting submitted numbers',async()=>{const a=await help({...req,phase:'after',intent:'explain',outcome:{energy:9999}},{env:{}});assert.ok(a.text.includes('58'));assert.ok(!a.text.includes('9999'));});
+test('LLM cannot return fabricated citation IDs',async()=>{await assert.rejects(help(req,{env:{LLM_API_KEY:'test',LLM_BASE_URL:'https://example.test/v1',LLM_MODEL:'test'},fetcher:async()=>({ok:true,json:async()=>({choices:[{message:{content:JSON.stringify({text:'wrong',citations:['invented']})}}]})})}));});
