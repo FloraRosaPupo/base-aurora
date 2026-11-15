@@ -2,11 +2,14 @@
 
 Protótipo educativo em **Flutter web** para o desafio **Build a Junior Astronaut Mission Trainer**. O estudante registra uma expectativa, decide como administrar energia e cultivo em uma base marciana fictícia, observa o resultado e compara estratégias a partir do mesmo estado inicial.
 
+![Arte conceitual da Base Aurora gerada com IA](assets/mars.png)
+
 ## Acessar e apresentar
 
 - [Abrir a demonstração pública](https://base-aurora-kera.florapupo.chatgpt.site)
 - [PowerPoint editável](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
 - [Apresentação em PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
+- [Fluxo de deploy pelo GitHub](docs/VERCEL.md)
 
 A apresentação tem 7 slides em inglês, captura real do protótipo, comparação das estratégias e links das fontes. O PowerPoint inclui transições de dissolução.
 
@@ -29,6 +32,8 @@ O 3D usa **Three.js 0.180.0**, integrado ao Flutter por `HtmlElementView` e uma 
 Requer Flutter estável com Dart >= 3.8, e navegador moderno para a cena. WebGL2 oferece a renderização principal; sem ele, um renderer CPU projeta a mesma geometria 3D em Canvas 2D, com câmera orbital e seleção. Versão usada na compilação: Flutter 3.50.0 / Dart 3.14.0. Node >= 22 para o backend opcional.
 
 ```sh
+git clone https://github.com/FloraRosaPupo/base-aurora.git
+cd base-aurora
 flutter pub get
 flutter run -d chrome --web-port 3000
 ```
