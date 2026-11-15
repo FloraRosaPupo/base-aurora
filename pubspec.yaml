@@ -1,0 +1,27 @@
+name: base_aurora
+description: Laboratório educativo de decisões em Marte — equipe Kera.
+publish_to: none
+version: 0.1.0+1
+environment:
+  sdk: '>=3.8.0 <4.0.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  web: ^1.1.1
+  http: ^1.4.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/mars.png
+    - assets/knowledge.json
+  fonts:
+    - family: AuroraSans
+      fonts:
+        - asset: assets/fonts/Manrope.ttf
+    - family: AuroraDisplay
+      fonts:
+        - asset: assets/fonts/SpaceGrotesk.ttf

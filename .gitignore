@@ -1,0 +1,12 @@
+.dart_tool/
+.pub-cache/
+.idea/
+*.iml
+.env
+.env.*
+!**/.env.example
+build/
+.flutter-plugins-dependencies
+.DS_Store
+
+dist/

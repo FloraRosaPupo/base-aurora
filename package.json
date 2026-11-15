@@ -1,0 +1,1 @@
+{"name":"base-aurora-kera","private":true,"scripts":{"test:backend":"node --test backend/test/*.test.mjs","aura":"node backend/server.mjs"}}
