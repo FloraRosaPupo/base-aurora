@@ -4,7 +4,7 @@ Protótipo educativo em **Flutter web** para o desafio **Build a Junior Astronau
 
 > **English summary — NASA Space Apps Challenge 2026, "Build a Junior Astronaut Mission Trainer".**
 > Base Aurora is a short, browser-based mission trainer for young learners. A dust event cuts solar power on a fictional Mars base; the learner records a prediction, chooses one of three strategies (conserve, use reserves, repair panels) and compares the outcomes on five connected indicators: energy, water, oxygen, food and exposure. A deterministic engine keeps every run reproducible, and the AURA assistant explains each result with curated NASA sources (ECLSS, Martian dust storms, Veggie, space radiation).
-> **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf) · **Run locally:** `flutter pub get && flutter run -d chrome`
+> **Full English README:** [README.en.md](README.en.md) · **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf) · **Run locally:** `flutter pub get && flutter run -d chrome`
 
 ![Arte conceitual da Base Aurora gerada com IA](assets/mars.png)
 
@@ -20,7 +20,7 @@ A apresentação tem 7 slides em inglês, captura real do protótipo, comparaç�
 
 ## O que funciona
 
-- Landing page responsiva em português, com ciência, atribuições, entrada animada e aproximação gradual da arte de fundo.
+- Landing page responsiva em português e inglês, com detecção do idioma do navegador, seletor PT/EN no cabeçalho, preferência salva, ciência, atribuições, entrada animada e aproximação gradual da arte de fundo.
 - Indicadores animados, sinalização na cena 3D e controle de pausa das animações. A preferência de movimento reduzido do navegador é respeitada.
 - Cena 3D WebGL com terreno, habitat, estufa, painéis e abrigo. Câmera orbital e seleção por toque/clique. Controles Flutter também permitem selecionar módulos.
 - Motor determinístico em Dart, com cinco indicadores e três estratégias.
