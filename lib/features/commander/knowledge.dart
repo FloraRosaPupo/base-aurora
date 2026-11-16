@@ -3,26 +3,33 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
+import '../../i18n.dart';
 import '../mission/domain/simulation.dart';
 
 class ScienceSource {
-  final String id, title, source, url, topic, text;
+  final String id, titlePt, titleEn, source, url, topic, textPt, textEn;
   const ScienceSource(
     this.id,
-    this.title,
+    this.titlePt,
+    this.titleEn,
     this.source,
     this.url,
     this.topic,
-    this.text,
+    this.textPt,
+    this.textEn,
   );
   factory ScienceSource.fromJson(Map<String, dynamic> j) => ScienceSource(
     j['id'],
     j['title'],
+    j['title_en'] ?? j['title'],
     j['source'],
     j['url'],
     j['topic'],
     j['text'],
+    j['text_en'] ?? j['text'],
   );
+  String get title => tr(titlePt, titleEn);
+  String get text => tr(textPt, textEn);
 }
 
 class AuraAnswer {
@@ -54,7 +61,9 @@ class KnowledgeService {
             s,
             words
                 .where(
-                  (w) => ('${s.topic} ${s.text}').toLowerCase().contains(w),
+                  (w) => '${s.topic} ${s.textPt} ${s.titlePt} ${s.textEn}'
+                      .toLowerCase()
+                      .contains(w),
                 )
                 .length,
           ),
@@ -71,7 +80,7 @@ class KnowledgeService {
     bool decided,
   ) async {
     final query =
-        '${choice.detail} ${intent == 'science' ? 'ciência energia suporte estufa radiação' : ''}';
+        '${choice.detail} ${intent == 'science' ? 'ciência energia suporte estufa radiação science energy life support greenhouse radiation' : ''}';
     final found = retrieve(query);
     const endpoint = String.fromEnvironment('AURA_API_URL');
     if (endpoint.isNotEmpty) {
@@ -100,8 +109,14 @@ class KnowledgeService {
             return AuraAnswer(
               j['text'],
               j['mode'] == 'llm'
-                  ? 'IA com recuperação de fontes'
-                  : 'Explicação local revisada',
+                  ? tr(
+                      'IA com recuperação de fontes',
+                      'AI with source retrieval',
+                    )
+                  : tr(
+                      'Explicação local revisada',
+                      'Reviewed local explanation',
+                    ),
               valid,
             );
         }
@@ -110,21 +125,40 @@ class KnowledgeService {
       }
     }
     final hint = switch (choice) {
-      Strategy.conserve =>
+      Strategy.conserve => tr(
         'Observe a relação entre o consumo da estufa e a contribuição dela para os alimentos. Qual recurso você quer preservar e qual compromisso aceita?',
-      Strategy.reserve =>
+        'Notice the link between greenhouse consumption and its contribution to food. Which resource do you want to preserve, and which trade-off do you accept?',
+      ),
+      Strategy.reserve => tr(
         'A reserva mantém os sistemas em funcionamento por um período. Pense no que muda na energia disponível ao final, mesmo quando os alimentos recebem maior contribuição.',
-      Strategy.repair =>
+        'The reserve keeps systems running for a period. Think about what changes in the energy available at the end, even when food gets a larger contribution.',
+      ),
+      Strategy.repair => tr(
         'Uma atividade externa pode recuperar capacidade, mas exige recursos e envolve exposição. Compare esse custo com permanecer protegido e usar a reserva.',
+        'An external activity can recover capacity, but it demands resources and involves exposure. Compare that cost with staying protected and using the reserve.',
+      ),
     };
     final message = intent == 'hint' && !decided
         ? hint
         : intent == 'science'
-        ? '${found.map((s) => s.text).join('\n\n')}\n\nOs números da missão são unidades didáticas. As referências descrevem princípios e experiências reais, não validam as constantes da simulação.'
+        ? tr(
+            '${found.map((s) => s.text).join('\n\n')}\n\nOs números da missão são unidades didáticas. As referências descrevem princípios e experiências reais, não validam as constantes da simulação.',
+            '${found.map((s) => s.text).join('\n\n')}\n\nThe mission numbers are didactic units. The references describe principles and real experiments; they do not validate the simulation constants.',
+          )
         : Simulation.explanation(choice) +
               (expected == null
-                  ? ' Você marcou “não sei”. Compare agora as alternativas para construir sua explicação.'
-                  : ' Sua expectativa registrada foi preservar ${expected.label.toLowerCase()}. Veja as variações e compare com a outra estratégia antes de concluir.');
-    return AuraAnswer(message, 'Explicação local revisada', found);
+                  ? tr(
+                      ' Você marcou “não sei”. Compare agora as alternativas para construir sua explicação.',
+                      ' You marked “don\'t know”. Now compare the alternatives to build your explanation.',
+                    )
+                  : tr(
+                      ' Sua expectativa registrada foi preservar ${expected.label.toLowerCase()}. Veja as variações e compare com a outra estratégia antes de concluir.',
+                      ' Your recorded expectation was to preserve ${expected.label.toLowerCase()}. Look at the variations and compare with the other strategy before finishing.',
+                    ));
+    return AuraAnswer(
+      message,
+      tr('Explicação local revisada', 'Reviewed local explanation'),
+      found,
+    );
   }
 }

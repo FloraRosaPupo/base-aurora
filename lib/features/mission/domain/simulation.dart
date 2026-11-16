@@ -1,20 +1,28 @@
+import '../../../i18n.dart';
+
 enum Strategy { conserve, reserve, repair }
 
 enum Resource { energy, water, oxygen, food, radiation }
 
 extension StrategyInfo on Strategy {
   String get title => switch (this) {
-    Strategy.conserve => 'Priorizar a reserva',
-    Strategy.reserve => 'Manter a estufa',
-    Strategy.repair => 'Manutenção externa',
+    Strategy.conserve => tr('Priorizar a reserva', 'Prioritize the reserve'),
+    Strategy.reserve => tr('Manter a estufa', 'Keep the greenhouse'),
+    Strategy.repair => tr('Manutenção externa', 'External maintenance'),
   };
   String get detail => switch (this) {
-    Strategy.conserve =>
+    Strategy.conserve => tr(
       'Reduzir a operação da estufa para consumir menos água e energia.',
-    Strategy.reserve =>
+      'Reduce greenhouse operation to use less water and energy.',
+    ),
+    Strategy.reserve => tr(
       'Usar a energia armazenada para manter a estufa em operação normal.',
-    Strategy.repair =>
+      'Use the stored energy to keep the greenhouse running normally.',
+    ),
+    Strategy.repair => tr(
       'Recuperar parte da geração solar, com gasto de energia e maior exposição externa.',
+      'Recover part of the solar generation, spending energy and increasing external exposure.',
+    ),
   };
   Resource get preserved =>
       this == Strategy.reserve ? Resource.food : Resource.energy;
@@ -27,11 +35,11 @@ extension StrategyInfo on Strategy {
 
 extension ResourceInfo on Resource {
   String get label => switch (this) {
-    Resource.energy => 'Energia',
-    Resource.water => 'Água',
-    Resource.oxygen => 'Oxigênio',
-    Resource.food => 'Alimentos',
-    Resource.radiation => 'Exposição',
+    Resource.energy => tr('Energia', 'Energy'),
+    Resource.water => tr('Água', 'Water'),
+    Resource.oxygen => tr('Oxigênio', 'Oxygen'),
+    Resource.food => tr('Alimentos', 'Food'),
+    Resource.radiation => tr('Exposição', 'Exposure'),
   };
 }
 
@@ -92,11 +100,17 @@ class Simulation {
   }
 
   static String explanation(Strategy choice) => switch (choice) {
-    Strategy.conserve =>
+    Strategy.conserve => tr(
       'Você preservou mais energia e água. A estufa operou em modo reduzido, então sua contribuição para os alimentos foi menor neste período didático. O suporte à vida permaneceu ativo.',
-    Strategy.reserve =>
+      'You preserved more energy and water. The greenhouse ran in reduced mode, so its contribution to food was smaller in this didactic period. Life support remained active.',
+    ),
+    Strategy.reserve => tr(
       'Você manteve maior contribuição da estufa para os alimentos. O custo foi consumir mais da reserva de energia e mais água. O suporte à vida permaneceu ativo.',
-    Strategy.repair =>
+      'You kept a larger greenhouse contribution to food. The cost was drawing more from the energy reserve and using more water. Life support remained active.',
+    ),
+    Strategy.repair => tr(
       'A manutenção recuperou parte da geração neste cenário roteirizado, mas consumiu energia e aumentou a exposição externa. Recuperação e exposição são regras didáticas, não previsões de uma missão real.',
+      'Maintenance recovered part of the generation in this scripted scenario, but it consumed energy and increased external exposure. Recovery and exposure are didactic rules, not predictions for a real mission.',
+    ),
   };
 }

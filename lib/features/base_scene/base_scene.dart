@@ -5,6 +5,8 @@ import 'dart:ui_web' as ui_web;
 import 'package:flutter/material.dart';
 import 'package:web/web.dart' as web;
 
+import '../../i18n.dart';
+
 class BaseScene extends StatefulWidget {
   final String selected;
   final String strategy;
@@ -33,7 +35,10 @@ class _BaseSceneState extends State<BaseScene> {
     viewType = 'aurora-scene-${nextId++}';
     frame = web.HTMLIFrameElement()
       ..src = 'scene.html'
-      ..title = 'Visualização 3D interativa da Base Aurora';
+      ..title = tr(
+        'Visualização 3D interativa da Base Aurora',
+        'Interactive 3D view of Base Aurora',
+      );
     frame.style
       ..border = '0'
       ..width = '100%'
@@ -68,6 +73,7 @@ class _BaseSceneState extends State<BaseScene> {
         'selected': widget.selected,
         'strategy': widget.strategy,
         'motion': widget.motion,
+        'lang': appLang.value.name,
       }).toJS,
       web.window.location.origin.toJS,
     );
@@ -90,22 +96,25 @@ class _BaseSceneState extends State<BaseScene> {
     children: [
       Positioned.fill(child: HtmlElementView(viewType: viewType)),
       if (!ready && !failed)
-        const Center(
+        Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CircularProgressIndicator(color: Color(0xFFFFA76D)),
-              SizedBox(height: 18),
-              Text('Preparando a base 3D…'),
+              const CircularProgressIndicator(color: Color(0xFFFFA76D)),
+              const SizedBox(height: 18),
+              Text(tr('Preparando a base 3D…', 'Preparing the 3D base…')),
             ],
           ),
         ),
       if (failed)
-        const Center(
+        Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Text(
-              'O navegador não disponibilizou WebGL. Você pode continuar usando os controles dos módulos abaixo.',
+              tr(
+                'O navegador não disponibilizou WebGL. Você pode continuar usando os controles dos módulos abaixo.',
+                'The browser did not provide WebGL. You can keep using the module controls below.',
+              ),
               textAlign: TextAlign.center,
             ),
           ),

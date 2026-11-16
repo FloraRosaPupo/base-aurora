@@ -7,6 +7,7 @@ import 'package:web/web.dart' as web;
 import 'features/mission/domain/simulation.dart';
 import 'features/commander/knowledge.dart';
 import 'features/base_scene/base_scene.dart';
+import 'i18n.dart';
 
 const bg = Color(0xFF080D16),
     surface = Color(0xFF111C2B),
@@ -24,8 +25,41 @@ final sceneCovered = ValueNotifier(false);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  initLang();
   await knowledge.load();
   runApp(const AuroraApp());
+}
+
+void initLang() {
+  final stored = web.window.localStorage.getItem('aurora-lang');
+  appLang.value =
+      (stored ?? web.window.navigator.language).toLowerCase().startsWith('en')
+      ? AppLang.en
+      : AppLang.pt;
+  applyLang();
+}
+
+void chooseLang(AppLang lang) {
+  if (appLang.value == lang) return;
+  appLang.value = lang;
+  web.window.localStorage.setItem('aurora-lang', lang.name);
+  applyLang();
+}
+
+void applyLang() {
+  final en = appLang.value == AppLang.en;
+  web.document.documentElement?.setAttribute('lang', en ? 'en' : 'pt-BR');
+  web.document.title = en
+      ? 'Base Aurora — Kera · Mars decision lab'
+      : 'Base Aurora — Kera';
+  web.document
+      .querySelector('meta[name="description"]')
+      ?.setAttribute(
+        'content',
+        en
+            ? 'Educational decision lab on Mars. Team Kera. Independent simulation, not endorsed by NASA.'
+            : 'Laboratório educativo de decisões em Marte. Equipe Kera.',
+      );
 }
 
 class AuroraApp extends StatefulWidget {
@@ -37,41 +71,48 @@ class AuroraApp extends StatefulWidget {
 class _AuroraAppState extends State<AuroraApp> {
   bool playing = false;
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: 'Base Aurora — Kera',
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      fontFamily: 'AuroraSans',
-      scaffoldBackgroundColor: bg,
-      colorScheme: const ColorScheme.dark(
-        primary: accent,
-        surface: surface,
-        onSurface: white,
-      ),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: white, fontSize: 15),
-      ),
-      inputDecorationTheme: const InputDecorationTheme(
-        filled: true,
-        fillColor: surface,
-        border: OutlineInputBorder(borderSide: BorderSide(color: line)),
-        enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: line)),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: accent,
-          foregroundColor: bg,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(9)),
+  Widget build(BuildContext context) => ValueListenableBuilder<AppLang>(
+    valueListenable: appLang,
+    builder: (context, lang, _) => MaterialApp(
+      title: tr('Base Aurora — Kera', 'Base Aurora — Kera · Mars decision lab'),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        fontFamily: 'AuroraSans',
+        scaffoldBackgroundColor: bg,
+        colorScheme: const ColorScheme.dark(
+          primary: accent,
+          surface: surface,
+          onSurface: white,
+        ),
+        textTheme: const TextTheme(
+          bodyMedium: TextStyle(color: white, fontSize: 15),
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          filled: true,
+          fillColor: surface,
+          border: OutlineInputBorder(borderSide: BorderSide(color: line)),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: line),
+          ),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            backgroundColor: accent,
+            foregroundColor: bg,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(9),
+            ),
+          ),
         ),
       ),
-    ),
-    home: Scaffold(
-      body: playing
-          ? MissionPage(onExit: () => setState(() => playing = false))
-          : LandingPage(onStart: () => setState(() => playing = true)),
+      home: Scaffold(
+        body: playing
+            ? MissionPage(onExit: () => setState(() => playing = false))
+            : LandingPage(onStart: () => setState(() => playing = true)),
+      ),
     ),
   );
 }
@@ -146,6 +187,39 @@ void openLink(String url) {
   web.window.open(url, '_blank', 'noopener,noreferrer');
 }
 
+Widget langSwitch() => Container(
+  decoration: BoxDecoration(
+    border: Border.all(color: line),
+    borderRadius: BorderRadius.circular(7),
+  ),
+  child: Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      for (final l in AppLang.values)
+        InkWell(
+          onTap: () => chooseLang(l),
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+            decoration: BoxDecoration(
+              color: appLang.value == l ? accent : Colors.transparent,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              l.name.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+                color: appLang.value == l ? bg : muted,
+              ),
+            ),
+          ),
+        ),
+    ],
+  ),
+);
+
 Future<void> sources(BuildContext context) async {
   sceneCovered.value = true;
   try {
@@ -163,16 +237,22 @@ Future<void> sources(BuildContext context) async {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              eyebrow('CIÊNCIA E TRANSPARÊNCIA'),
+              eyebrow(tr('CIÊNCIA E TRANSPARÊNCIA', 'SCIENCE & TRANSPARENCY')),
               const SizedBox(height: 12),
               txt(
-                'A ciência por trás da missão',
+                tr(
+                  'A ciência por trás da missão',
+                  'The science behind the mission',
+                ),
                 size: 27,
                 weight: FontWeight.bold,
               ),
               const SizedBox(height: 12),
               txt(
-                'Sínteses revisadas de referências públicas da NASA. O jogo usa unidades didáticas e não representa uma missão real ou dose médica. Fontes da ISS explicam princípios, não uma base marciana existente.',
+                tr(
+                  'Sínteses revisadas de referências públicas da NASA. O jogo usa unidades didáticas e não representa uma missão real ou dose médica. Fontes da ISS explicam princípios, não uma base marciana existente.',
+                  'Reviewed summaries of public NASA references. The game uses didactic units and does not represent a real mission or medical dose. ISS sources explain principles, not an existing Mars base.',
+                ),
                 color: muted,
               ),
               const SizedBox(height: 22),
@@ -196,13 +276,16 @@ Future<void> sources(BuildContext context) async {
               ),
               const Divider(color: line),
               txt(
-                'AURA usa explicações locais revisadas nesta versão. A geração com modelo pode ser ativada por um backend configurado. A ilustração da página inicial foi gerada com IA. Os módulos 3D são geometrias criadas para esta simulação.',
+                tr(
+                  'AURA usa explicações locais revisadas nesta versão. A geração com modelo pode ser ativada por um backend configurado. A ilustração da página inicial foi gerada com IA. Os módulos 3D são geometrias criadas para esta simulação.',
+                  'AURA uses reviewed local explanations in this version. Model generation can be enabled through a configured backend. The landing-page illustration was generated with AI. The 3D modules are geometries created for this simulation.',
+                ),
                 size: 13,
                 color: muted,
               ),
               const SizedBox(height: 20),
               outlineButton(
-                'Ver desafio oficial',
+                tr('Ver desafio oficial', 'View the official challenge'),
                 Icons.open_in_new,
                 () => openLink(
                   'https://www.spaceappschallenge.org/2026/challenges/junior-astronaut-mission-trainer/',
@@ -286,25 +369,32 @@ class LandingPage extends StatelessWidget {
                         if (!small)
                           Row(
                             children: [
+                              langSwitch(),
+                              const SizedBox(width: 22),
                               TextButton(
                                 onPressed: () => sources(context),
-                                child: const Text(
-                                  'Ciência da missão',
-                                  style: TextStyle(color: white),
+                                child: Text(
+                                  tr('Ciência da missão', 'Mission science'),
+                                  style: const TextStyle(color: white),
                                 ),
                               ),
                               const SizedBox(width: 28),
                               outlineButton(
-                                'Iniciar missão',
+                                tr('Iniciar missão', 'Start mission'),
                                 Icons.north_east,
                                 onStart,
                               ),
                             ],
                           )
                         else
-                          IconButton(
-                            onPressed: () => sources(context),
-                            icon: const Icon(Icons.menu_book_outlined),
+                          Row(
+                            children: [
+                              langSwitch(),
+                              IconButton(
+                                onPressed: () => sources(context),
+                                icon: const Icon(Icons.menu_book_outlined),
+                              ),
+                            ],
                           ),
                       ],
                     ),
@@ -329,16 +419,21 @@ class LandingPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          eyebrow('EQUIPE KERA / LABORATÓRIO DE DECISÕES'),
+                          eyebrow(
+                            tr(
+                              'EQUIPE KERA / LABORATÓRIO DE DECISÕES',
+                              'KERA TEAM / DECISION LAB',
+                            ),
+                          ),
                           const SizedBox(height: 27),
                           txt(
-                            'Uma base em Marte.',
+                            tr('Uma base em Marte.', 'A base on Mars.'),
                             size: small ? 40 : 68,
                             weight: FontWeight.w700,
                             height: 1.08,
                           ),
                           txt(
-                            'A sua decisão.',
+                            tr('A sua decisão.', 'Your decision.'),
                             size: small ? 47 : 80,
                             color: accent,
                             weight: FontWeight.w700,
@@ -348,7 +443,10 @@ class LandingPage extends StatelessWidget {
                           ConstrainedBox(
                             constraints: const BoxConstraints(maxWidth: 465),
                             child: txt(
-                              'Explore os sistemas. Antecipe consequências. Compare caminhos para manter a missão viva.',
+                              tr(
+                                'Explore os sistemas. Antecipe consequências. Compare caminhos para manter a missão viva.',
+                                'Explore the systems. Anticipate consequences. Compare paths to keep the mission alive.',
+                              ),
                               size: small ? 17 : 19,
                               color: const Color(0xFFB8C6D5),
                               height: 1.7,
@@ -358,9 +456,9 @@ class LandingPage extends StatelessWidget {
                           FilledButton.icon(
                             onPressed: onStart,
                             icon: const Icon(Icons.arrow_forward, size: 20),
-                            label: const Text(
-                              'Assumir o comando',
-                              style: TextStyle(
+                            label: Text(
+                              tr('Assumir o comando', 'Take command'),
+                              style: const TextStyle(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 16,
                               ),
@@ -368,7 +466,10 @@ class LandingPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 17),
                           txt(
-                            'Uma experiência curta. Uma escolha que faz pensar.',
+                            tr(
+                              'Uma experiência curta. Uma escolha que faz pensar.',
+                              'A short experience. A choice that makes you think.',
+                            ),
                             size: 12,
                             color: muted,
                           ),
@@ -392,14 +493,32 @@ class LandingPage extends StatelessWidget {
                           spacing: small ? 32 : 70,
                           runSpacing: 16,
                           children: [
-                            metric('03', 'estratégias reais no jogo'),
-                            metric('05', 'sistemas conectados'),
-                            metric('NASA', 'referências científicas'),
+                            metric(
+                              '03',
+                              tr(
+                                'estratégias reais no jogo',
+                                'real strategies in the game',
+                              ),
+                            ),
+                            metric(
+                              '05',
+                              tr('sistemas conectados', 'connected systems'),
+                            ),
+                            metric(
+                              'NASA',
+                              tr(
+                                'referências científicas',
+                                'scientific references',
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 22),
                         txt(
-                          'Ilustração conceitual gerada com IA',
+                          tr(
+                            'Ilustração conceitual gerada com IA',
+                            'AI-generated conceptual illustration',
+                          ),
                           size: 9,
                           color: muted,
                         ),
@@ -419,9 +538,9 @@ class LandingPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'O DESAFIO',
-                    style: TextStyle(
+                  Text(
+                    tr('O DESAFIO', 'THE CHALLENGE'),
+                    style: const TextStyle(
                       color: Color(0xFF9A5334),
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
@@ -430,7 +549,7 @@ class LandingPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 18),
                   txt(
-                    'Tudo está conectado.',
+                    tr('Tudo está conectado.', 'Everything is connected.'),
                     size: small ? 36 : 55,
                     color: const Color(0xFF14202E),
                     weight: FontWeight.w700,
@@ -440,7 +559,10 @@ class LandingPage extends StatelessWidget {
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 760),
                     child: txt(
-                      'A poeira reduz a energia solar. O suporte à vida continua ativo. Você poupa a reserva, mantém a estufa ou faz uma manutenção externa?',
+                      tr(
+                        'A poeira reduz a energia solar. O suporte à vida continua ativo. Você poupa a reserva, mantém a estufa ou faz uma manutenção externa?',
+                        'Dust reduces solar power. Life support stays active. Do you save the reserve, keep the greenhouse running, or perform external maintenance?',
+                      ),
                       size: small ? 17 : 21,
                       color: const Color(0xFF586476),
                     ),
@@ -488,10 +610,15 @@ class LandingPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  eyebrow('A MISSÃO É ENTENDER'),
+                  eyebrow(
+                    tr('A MISSÃO É ENTENDER', 'THE MISSION IS TO UNDERSTAND'),
+                  ),
                   const SizedBox(height: 17),
                   txt(
-                    'Você prevê. O jogo responde.',
+                    tr(
+                      'Você prevê. O jogo responde.',
+                      'You predict. The game answers.',
+                    ),
                     size: small ? 32 : 46,
                     weight: FontWeight.w700,
                     height: 1.15,
@@ -503,25 +630,41 @@ class LandingPage extends StatelessWidget {
                     children: [
                       step(
                         '01',
-                        'Preveja',
-                        'O que a sua estratégia vai preservar?',
+                        tr('Preveja', 'Predict'),
+                        tr(
+                          'O que a sua estratégia vai preservar?',
+                          'What will your strategy preserve?',
+                        ),
                       ),
                       step(
                         '02',
-                        'Experimente',
-                        'Observe o resultado calculado.',
+                        tr('Experimente', 'Experiment'),
+                        tr(
+                          'Observe o resultado calculado.',
+                          'Observe the calculated outcome.',
+                        ),
                       ),
-                      step('03', 'Compare', 'Outra escolha, o mesmo início.'),
+                      step(
+                        '03',
+                        tr('Compare', 'Compare'),
+                        tr(
+                          'Outra escolha, o mesmo início.',
+                          'Another choice, the same starting point.',
+                        ),
+                      ),
                       step(
                         '04',
-                        'Explique',
-                        'AURA conecta sua decisão à ciência.',
+                        tr('Explique', 'Explain'),
+                        tr(
+                          'AURA conecta sua decisão à ciência.',
+                          'AURA connects your decision to the science.',
+                        ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 40),
                   outlineButton(
-                    'Abrir as fontes da missão',
+                    tr('Abrir as fontes da missão', 'Open mission sources'),
                     Icons.menu_book_outlined,
                     () => sources(context),
                   ),
@@ -546,7 +689,10 @@ class LandingPage extends StatelessWidget {
                       brand(),
                       const SizedBox(height: 13),
                       txt(
-                        'Desenvolvido pela equipe Kera.',
+                        tr(
+                          'Desenvolvido pela equipe Kera.',
+                          'Built by team Kera.',
+                        ),
                         size: 13,
                         color: muted,
                       ),
@@ -555,7 +701,10 @@ class LandingPage extends StatelessWidget {
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 550),
                     child: txt(
-                      'Build a Junior Astronaut Mission Trainer\nNASA Space Apps 2026 · Ribeirão Preto\nSimulação didática independente. Sem endosso da NASA.',
+                      tr(
+                        'Build a Junior Astronaut Mission Trainer\nNASA Space Apps 2026 · Ribeirão Preto\nSimulação didática independente. Sem endosso da NASA.',
+                        'Build a Junior Astronaut Mission Trainer\nNASA Space Apps 2026 · Ribeirão Preto\nIndependent educational simulation. Not endorsed by NASA.',
+                      ),
                       size: 12,
                       color: muted,
                     ),
@@ -658,14 +807,20 @@ class _MissionPageState extends State<MissionPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                eyebrow('COMANDANTE AURA'),
+                eyebrow(tr('COMANDANTE AURA', 'COMMANDER AURA')),
                 const SizedBox(height: 12),
                 txt(
                   intent == 'hint'
-                      ? 'Uma pista para pensar'
+                      ? tr('Uma pista para pensar', 'A hint to think about')
                       : intent == 'science'
-                      ? 'O que a ciência explica'
-                      : 'Sua decisão, explicada',
+                      ? tr(
+                          'O que a ciência explica',
+                          'What the science explains',
+                        )
+                      : tr(
+                          'Sua decisão, explicada',
+                          'Your decision, explained',
+                        ),
                   size: 26,
                   weight: FontWeight.bold,
                 ),
@@ -686,7 +841,9 @@ class _MissionPageState extends State<MissionPage> {
                       children: [
                         txt(a.text, size: 17),
                         const SizedBox(height: 24),
-                        eyebrow('REFERÊNCIAS RECUPERADAS'),
+                        eyebrow(
+                          tr('REFERÊNCIAS RECUPERADAS', 'RETRIEVED REFERENCES'),
+                        ),
                         const SizedBox(height: 10),
                         ...a.sources.map(
                           (s) => ListTile(
@@ -708,7 +865,10 @@ class _MissionPageState extends State<MissionPage> {
                         const Divider(color: line),
                         txt(
                           a.mode +
-                              ' · A consulta não altera os recursos da missão.',
+                              tr(
+                                ' · A consulta não altera os recursos da missão.',
+                                ' · The query does not change the mission resources.',
+                              ),
                           size: 12,
                           color: muted,
                         ),
@@ -749,12 +909,45 @@ class _MissionPageState extends State<MissionPage> {
                       Row(
                         children: [
                           if (c.maxWidth > 650)
-                            eyebrow('MISSÃO 01 / A POEIRA CHEGOU'),
+                            eyebrow(
+                              tr(
+                                'MISSÃO 01 / A POEIRA CHEGOU',
+                                'MISSION 01 / THE DUST HAS ARRIVED',
+                              ),
+                            ),
                           const SizedBox(width: 12),
+                          if (c.maxWidth > 620)
+                            langSwitch()
+                          else
+                            IconButton(
+                              tooltip: appLang.value == AppLang.en
+                                  ? tr(
+                                      'Mudar para português',
+                                      'Switch to Portuguese',
+                                    )
+                                  : tr(
+                                      'Mudar para inglês',
+                                      'Switch to English',
+                                    ),
+                              onPressed: () => chooseLang(
+                                appLang.value == AppLang.en
+                                    ? AppLang.pt
+                                    : AppLang.en,
+                              ),
+                              icon: Text(
+                                appLang.value == AppLang.en ? 'PT' : 'EN',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(width: 4),
                           IconButton(
                             tooltip: motion
-                                ? 'Pausar animações'
-                                : 'Ativar animações',
+                                ? tr('Pausar animações', 'Pause animations')
+                                : tr('Ativar animações', 'Enable animations'),
                             onPressed: () => setState(() => motion = !motion),
                             icon: Icon(
                               motion
@@ -764,7 +957,10 @@ class _MissionPageState extends State<MissionPage> {
                             ),
                           ),
                           IconButton(
-                            tooltip: 'Fontes e ciência',
+                            tooltip: tr(
+                              'Fontes e ciência',
+                              'Sources & science',
+                            ),
                             onPressed: () => sources(context),
                             icon: const Icon(
                               Icons.menu_book_outlined,
@@ -772,25 +968,37 @@ class _MissionPageState extends State<MissionPage> {
                             ),
                           ),
                           IconButton(
-                            tooltip: 'Reiniciar missão',
+                            tooltip: tr('Reiniciar missão', 'Restart mission'),
                             onPressed: () async {
                               sceneCovered.value = true;
                               final restart = await showDialog<bool>(
                                 context: context,
                                 builder: (c) => AlertDialog(
-                                  title: const Text('Reiniciar a missão?'),
-                                  content: const Text(
-                                    'As escolhas desta sessão serão apagadas.',
+                                  title: Text(
+                                    tr(
+                                      'Reiniciar a missão?',
+                                      'Restart the mission?',
+                                    ),
+                                  ),
+                                  content: Text(
+                                    tr(
+                                      'As escolhas desta sessão serão apagadas.',
+                                      "This session's choices will be erased.",
+                                    ),
                                   ),
                                   actions: [
                                     TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(c, false),
-                                      child: const Text('Continuar missão'),
+                                      onPressed: () => Navigator.pop(c, false),
+                                      child: Text(
+                                        tr(
+                                          'Continuar missão',
+                                          'Continue mission',
+                                        ),
+                                      ),
                                     ),
                                     FilledButton(
                                       onPressed: () => Navigator.pop(c, true),
-                                      child: const Text('Reiniciar'),
+                                      child: Text(tr('Reiniciar', 'Restart')),
                                     ),
                                   ],
                                 ),
@@ -811,7 +1019,13 @@ class _MissionPageState extends State<MissionPage> {
                   spacing: 18,
                   runSpacing: 10,
                   children:
-                      ['Explorar', 'Prever', 'Observar', 'Comparar', 'Explicar']
+                      [
+                            tr('Explorar', 'Explore'),
+                            tr('Prever', 'Predict'),
+                            tr('Observar', 'Observe'),
+                            tr('Comparar', 'Compare'),
+                            tr('Explicar', 'Explain'),
+                          ]
                           .asMap()
                           .entries
                           .map(
@@ -846,7 +1060,10 @@ class _MissionPageState extends State<MissionPage> {
                 ),
                 const SizedBox(height: 10),
                 txt(
-                  'Unidades didáticas (0–100). Na exposição, menor é melhor. Estado inicial preservado para a comparação.',
+                  tr(
+                    'Unidades didáticas (0–100). Na exposição, menor é melhor. Estado inicial preservado para a comparação.',
+                    'Didactic units (0–100). For exposure, lower is better. Initial state preserved for comparison.',
+                  ),
                   size: 10,
                   color: muted,
                 ),
@@ -879,7 +1096,10 @@ class _MissionPageState extends State<MissionPage> {
                     children: [
                       txt('KERA / BASE AURORA', size: 10, color: muted),
                       txt(
-                        'Simulação educativa. Regras v1.0. Nenhum indicador representa dose ou previsão real.',
+                        tr(
+                          'Simulação educativa. Regras v1.0. Nenhum indicador representa dose ou previsão real.',
+                          'Educational simulation. Rules v1.0. No indicator represents real dose or prediction.',
+                        ),
                         size: 10,
                         color: muted,
                       ),
@@ -978,8 +1198,14 @@ class _MissionPageState extends State<MissionPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              eyebrow('BASE AURORA / VISUALIZAÇÃO 3D'),
-              txt('MARTE · CENÁRIO DIDÁTICO', size: 9, color: muted),
+              eyebrow(
+                tr('BASE AURORA / VISUALIZAÇÃO 3D', 'BASE AURORA / 3D VIEW'),
+              ),
+              txt(
+                tr('MARTE · CENÁRIO DIDÁTICO', 'MARS · DIDACTIC SCENARIO'),
+                size: 9,
+                color: muted,
+              ),
             ],
           ),
         ),
@@ -995,7 +1221,10 @@ class _MissionPageState extends State<MissionPage> {
                     color: surface,
                     child: Center(
                       child: txt(
-                        'Cena 3D pausada enquanto o diálogo está aberto',
+                        tr(
+                          'Cena 3D pausada enquanto o diálogo está aberto',
+                          '3D scene paused while the dialog is open',
+                        ),
                         size: 12,
                         color: muted,
                       ),
@@ -1020,10 +1249,10 @@ class _MissionPageState extends State<MissionPage> {
             runSpacing: 5,
             children:
                 {
-                      'habitat': 'Habitat',
-                      'solar': 'Painéis solares',
-                      'greenhouse': 'Estufa',
-                      'shelter': 'Abrigo',
+                      'habitat': tr('Habitat', 'Habitat'),
+                      'solar': tr('Painéis solares', 'Solar panels'),
+                      'greenhouse': tr('Estufa', 'Greenhouse'),
+                      'shelter': tr('Abrigo', 'Shelter'),
                     }.entries
                     .map(
                       (e) => ChoiceChip(
@@ -1050,14 +1279,22 @@ class _MissionPageState extends State<MissionPage> {
     ),
   );
   String get moduleDescription => switch (selected) {
-    'solar' =>
+    'solar' => tr(
       'Painéis solares: a poeira reduz a geração. A bateria oferece uma reserva limitada para os sistemas.',
-    'greenhouse' =>
+      'Solar panels: dust reduces generation. The battery offers a limited reserve for the systems.',
+    ),
+    'greenhouse' => tr(
       'Estufa: cultivo estabelecido usa água e energia. Sua contribuição para os alimentos depende do modo escolhido.',
-    'shelter' =>
+      'Greenhouse: the established crop uses water and energy. Its contribution to food depends on the chosen mode.',
+    ),
+    'shelter' => tr(
       'Abrigo: representa a proteção disponível. A manutenção externa aumenta o índice didático de exposição.',
-    _ =>
+      'Shelter: represents available protection. External maintenance increases the didactic exposure index.',
+    ),
+    _ => tr(
       'Habitat: mantém o suporte à vida. O cenário preserva a operação dos sistemas essenciais.',
+      'Habitat: keeps life support running. The scenario preserves essential systems operation.',
+    ),
   };
   Widget controlPanel() {
     return Container(
@@ -1070,15 +1307,22 @@ class _MissionPageState extends State<MissionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          eyebrow(stage < 2 ? 'TRANSMISSÃO DA MISSÃO' : 'REGISTRO DA MISSÃO'),
+          eyebrow(
+            stage < 2
+                ? tr('TRANSMISSÃO DA MISSÃO', 'MISSION TRANSMISSION')
+                : tr('REGISTRO DA MISSÃO', 'MISSION LOG'),
+          ),
           const SizedBox(height: 16),
           txt(
             switch (stage) {
-              0 => 'A poeira chegou.',
-              1 => 'Antes de decidir…',
-              2 => 'Essa foi a sua escolha.',
-              3 => 'Outra escolha.\nO mesmo ponto de partida.',
-              _ => 'O que você aprendeu?',
+              0 => tr('A poeira chegou.', 'The dust has arrived.'),
+              1 => tr('Antes de decidir…', 'Before deciding…'),
+              2 => tr('Essa foi a sua escolha.', 'That was your choice.'),
+              3 => tr(
+                'Outra escolha.\nO mesmo ponto de partida.',
+                'Another choice.\nThe same starting point.',
+              ),
+              _ => tr('O que você aprendeu?', 'What did you learn?'),
             },
             size: 28,
             weight: FontWeight.bold,
@@ -1087,37 +1331,52 @@ class _MissionPageState extends State<MissionPage> {
           const SizedBox(height: 17),
           if (stage == 0) ...[
             txt(
-              'A geração solar caiu. Água, oxigênio e alimentação continuam dependendo dos sistemas da base.',
+              tr(
+                'A geração solar caiu. Água, oxigênio e alimentação continuam dependendo dos sistemas da base.',
+                'Solar generation has dropped. Water, oxygen and food still depend on the base systems.',
+              ),
               color: muted,
               size: 15,
             ),
             const SizedBox(height: 15),
             txt(
-              'Seu objetivo é manter a missão viável e entender o custo da estratégia escolhida.',
+              tr(
+                'Seu objetivo é manter a missão viável e entender o custo da estratégia escolhida.',
+                'Your goal is to keep the mission viable and understand the cost of the strategy you chose.',
+              ),
               size: 14,
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: () => next(1),
               icon: const Icon(Icons.arrow_forward, size: 18),
-              label: const Text('Preparar minha decisão'),
+              label: Text(tr('Preparar minha decisão', 'Prepare my decision')),
             ),
           ],
           if (stage == 1) ...[
             txt(
-              'Sua estratégia: ${choice.title}. Registre sua expectativa antes de ver o resultado.',
+              tr(
+                'Sua estratégia: ${choice.title}. Registre sua expectativa antes de ver o resultado.',
+                'Your strategy: ${choice.title}. Record your expectation before seeing the result.',
+              ),
               size: 14,
               color: muted,
             ),
             const SizedBox(height: 18),
             predictionField(
-              'O que você espera preservar?',
+              tr(
+                'O que você espera preservar?',
+                'What do you expect to preserve?',
+              ),
               expectation,
               (v) => setState(() => expectation = v),
             ),
             const SizedBox(height: 14),
             predictionField(
-              'Qual custo você espera assumir?',
+              tr(
+                'Qual custo você espera assumir?',
+                'What cost do you expect to take on?',
+              ),
               sacrifice,
               (v) => setState(() => sacrifice = v),
             ),
@@ -1131,12 +1390,12 @@ class _MissionPageState extends State<MissionPage> {
                 next(2);
               },
               icon: const Icon(Icons.play_arrow, size: 18),
-              label: const Text('Confirmar e simular'),
+              label: Text(tr('Confirmar e simular', 'Confirm and simulate')),
             ),
             const SizedBox(height: 10),
             TextButton(
               onPressed: () => next(0),
-              child: const Text('Voltar à exploração'),
+              child: Text(tr('Voltar à exploração', 'Back to exploration')),
             ),
           ],
           if (stage == 2) ...[
@@ -1145,19 +1404,27 @@ class _MissionPageState extends State<MissionPage> {
             txt(Simulation.explanation(choice), size: 14, color: muted),
             const SizedBox(height: 16),
             txt(
-              'Você esperava preservar: ${expectation?.label ?? 'Não sei'}.\nCusto previsto: ${sacrifice?.label ?? 'Não sei'}.',
+              tr(
+                'Você esperava preservar: ${expectation?.label ?? 'Não sei'}.\nCusto previsto: ${sacrifice?.label ?? 'Não sei'}.',
+                "You expected to preserve: ${expectation?.label ?? "I don't know"}.\nExpected cost: ${sacrifice?.label ?? "I don't know"}.",
+              ),
               size: 13,
             ),
             const SizedBox(height: 22),
             FilledButton.icon(
               onPressed: () => next(3),
               icon: const Icon(Icons.compare_arrows, size: 18),
-              label: const Text('Comparar outra estratégia'),
+              label: Text(
+                tr('Comparar outra estratégia', 'Compare another strategy'),
+              ),
             ),
           ],
           if (stage == 3) ...[
             txt(
-              'Mudamos somente a estratégia. O estado inicial e o evento permanecem iguais.',
+              tr(
+                'Mudamos somente a estratégia. O estado inicial e o evento permanecem iguais.',
+                'We changed only the strategy. The initial state and the event stay the same.',
+              ),
               size: 14,
               color: muted,
             ),
@@ -1165,8 +1432,8 @@ class _MissionPageState extends State<MissionPage> {
             DropdownButtonFormField<Strategy>(
               initialValue: alternative,
               isExpanded: true,
-              decoration: const InputDecoration(
-                labelText: 'Estratégia alternativa',
+              decoration: InputDecoration(
+                labelText: tr('Estratégia alternativa', 'Alternative strategy'),
               ),
               items: Strategy.values
                   .where((s) => s != choice)
@@ -1186,25 +1453,28 @@ class _MissionPageState extends State<MissionPage> {
             FilledButton.icon(
               onPressed: () => next(4),
               icon: const Icon(Icons.arrow_forward, size: 18),
-              label: const Text('Concluir minha análise'),
+              label: Text(tr('Concluir minha análise', 'Finish my analysis')),
             ),
           ],
           if (stage == 4) ...[
             txt(
-              'Manter a base funcionando é parte da missão. Explicar o compromisso entre os recursos completa o aprendizado.',
+              tr(
+                'Manter a base funcionando é parte da missão. Explicar o compromisso entre os recursos completa o aprendizado.',
+                'Keeping the base running is part of the mission. Explaining the trade-off between resources completes the learning.',
+              ),
               size: 15,
               color: muted,
             ),
             const SizedBox(height: 20),
             outlineButton(
-              'Baixar registro da missão',
+              tr('Baixar registro da missão', 'Download mission log'),
               Icons.download_outlined,
               downloadReport,
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: reset,
-              child: const Text('Explorar novamente'),
+              child: Text(tr('Explorar novamente', 'Explore again')),
             ),
           ],
           const SizedBox(height: 25),
@@ -1216,12 +1486,15 @@ class _MissionPageState extends State<MissionPage> {
               const SizedBox(width: 10),
               txt('AURA', size: 15, weight: FontWeight.bold),
               const Spacer(),
-              txt('MODO LOCAL', size: 9, color: muted),
+              txt(tr('MODO LOCAL', 'LOCAL MODE'), size: 9, color: muted),
             ],
           ),
           const SizedBox(height: 10),
           txt(
-            'Explicações revisadas com referências NASA. A IA não altera o estado da missão.',
+            tr(
+              'Explicações revisadas com referências NASA. A IA não altera o estado da missão.',
+              'Reviewed explanations with NASA references. The AI does not change the mission state.',
+            ),
             size: 11,
             color: muted,
           ),
@@ -1231,12 +1504,14 @@ class _MissionPageState extends State<MissionPage> {
             runSpacing: 8,
             children: [
               outlineButton(
-                result == null ? 'Uma pista' : 'Por que foi assim?',
+                result == null
+                    ? tr('Uma pista', 'A hint')
+                    : tr('Por que foi assim?', 'Why did that happen?'),
                 Icons.chat_bubble_outline,
                 () => aura(result == null ? 'hint' : 'explain'),
               ),
               outlineButton(
-                'A ciência',
+                tr('A ciência', 'The science'),
                 Icons.menu_book_outlined,
                 () => aura('science'),
               ),
@@ -1260,15 +1535,20 @@ class _MissionPageState extends State<MissionPage> {
       labelStyle: const TextStyle(fontSize: 11),
     ),
     items: [
-      const DropdownMenuItem(
+      DropdownMenuItem(
         value: 'unknown',
-        child: Text('Não sei ainda', style: TextStyle(fontSize: 13)),
+        child: Text(
+          tr('Não sei ainda', 'Not sure yet'),
+          style: const TextStyle(fontSize: 13),
+        ),
       ),
       ...Resource.values.map(
         (r) => DropdownMenuItem(
           value: r.name,
           child: Text(
-            r == Resource.radiation ? 'Proteção / exposição' : r.label,
+            r == Resource.radiation
+                ? tr('Proteção / exposição', 'Protection / exposure')
+                : r.label,
             style: const TextStyle(fontSize: 13),
           ),
         ),
@@ -1281,7 +1561,7 @@ class _MissionPageState extends State<MissionPage> {
   Widget strategySelector(bool narrow) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      eyebrow('ESTRATÉGIAS DISPONÍVEIS'),
+      eyebrow(tr('ESTRATÉGIAS DISPONÍVEIS', 'AVAILABLE STRATEGIES')),
       const SizedBox(height: 15),
       LayoutBuilder(
         builder: (context, c) => Wrap(
@@ -1356,16 +1636,22 @@ class _MissionPageState extends State<MissionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          eyebrow('O CÁLCULO DA ENERGIA'),
+          eyebrow(tr('O CÁLCULO DA ENERGIA', 'THE ENERGY CALCULATION')),
           const SizedBox(height: 12),
           txt(
-            '${Simulation.initial.energy} inicial + ${b['solarGeneration']} geração − ${b['lifeSupportConsumption']} suporte − ${b['greenhouseConsumption']} estufa − ${b['maintenanceConsumption']} manutenção = ${result!.state.energy}',
+            tr(
+              '${Simulation.initial.energy} inicial + ${b['solarGeneration']} geração − ${b['lifeSupportConsumption']} suporte − ${b['greenhouseConsumption']} estufa − ${b['maintenanceConsumption']} manutenção = ${result!.state.energy}',
+              '${Simulation.initial.energy} initial + ${b['solarGeneration']} generation − ${b['lifeSupportConsumption']} life support − ${b['greenhouseConsumption']} greenhouse − ${b['maintenanceConsumption']} maintenance = ${result!.state.energy}',
+            ),
             size: 21,
             weight: FontWeight.bold,
           ),
           const SizedBox(height: 12),
           txt(
-            'Esses valores pertencem às regras da simulação. Não são medições ou projeções NASA.',
+            tr(
+              'Esses valores pertencem às regras da simulação. Não são medições ou projeções NASA.',
+              'These values belong to the simulation rules. They are not NASA measurements or projections.',
+            ),
             size: 12,
             color: muted,
           ),
@@ -1386,10 +1672,13 @@ class _MissionPageState extends State<MissionPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          eyebrow('COMPARAÇÃO CONTROLADA'),
+          eyebrow(tr('COMPARAÇÃO CONTROLADA', 'CONTROLLED COMPARISON')),
           const SizedBox(height: 15),
           txt(
-            'O que muda quando você escolhe diferente?',
+            tr(
+              'O que muda quando você escolhe diferente?',
+              'What changes when you choose differently?',
+            ),
             size: 24,
             weight: FontWeight.bold,
           ),
@@ -1403,9 +1692,17 @@ class _MissionPageState extends State<MissionPage> {
             children: [
               TableRow(
                 children: [
-                  tableCell('Recurso', muted),
-                  tableCell(narrow ? 'Sua escolha' : choice.title, accent),
-                  tableCell(narrow ? 'Alternativa' : alternative.title, green),
+                  tableCell(tr('Recurso', 'Resource'), muted),
+                  tableCell(
+                    narrow ? tr('Sua escolha', 'Your choice') : choice.title,
+                    accent,
+                  ),
+                  tableCell(
+                    narrow
+                        ? tr('Alternativa', 'Alternative')
+                        : alternative.title,
+                    green,
+                  ),
                 ],
               ),
               ...Resource.values.map(
@@ -1427,7 +1724,10 @@ class _MissionPageState extends State<MissionPage> {
           ),
           const SizedBox(height: 18),
           txt(
-            'Valores finais e variação em relação ao mesmo estado inicial. Menor exposição é melhor. As demais reservas têm limites didáticos de viabilidade.',
+            tr(
+              'Valores finais e variação em relação ao mesmo estado inicial. Menor exposição é melhor. As demais reservas têm limites didáticos de viabilidade.',
+              'Final values and change from the same initial state. Lower exposure is better. Other reserves have didactic viability limits.',
+            ),
             size: 12,
             color: muted,
           ),
@@ -1450,18 +1750,30 @@ class _MissionPageState extends State<MissionPage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        eyebrow('UMA ÚLTIMA PERGUNTA'),
+        eyebrow(tr('UMA ÚLTIMA PERGUNTA', 'ONE LAST QUESTION')),
         const SizedBox(height: 15),
         txt(
-          'Se a crise durasse mais, qual compromisso mereceria atenção ao reduzir a estufa?',
+          tr(
+            'Se a crise durasse mais, qual compromisso mereceria atenção ao reduzir a estufa?',
+            'If the crisis lasted longer, which trade-off would deserve attention when reducing the greenhouse?',
+          ),
           size: 23,
           weight: FontWeight.bold,
         ),
         const SizedBox(height: 16),
         ...[
-          'Preservar energia, mas reduzir a contribuição para os alimentos.',
-          'Preservar todos os recursos sem assumir nenhum custo.',
-          'Aumentar automaticamente o oxigênio e eliminar a exposição.',
+          tr(
+            'Preservar energia, mas reduzir a contribuição para os alimentos.',
+            'Preserve energy, but reduce the contribution to food.',
+          ),
+          tr(
+            'Preservar todos os recursos sem assumir nenhum custo.',
+            'Preserve all resources without taking on any cost.',
+          ),
+          tr(
+            'Aumentar automaticamente o oxigênio e eliminar a exposição.',
+            'Automatically increase oxygen and eliminate exposure.',
+          ),
         ].asMap().entries.map(
           (e) => Padding(
             padding: const EdgeInsets.only(bottom: 8),
@@ -1485,8 +1797,14 @@ class _MissionPageState extends State<MissionPage> {
             padding: const EdgeInsets.only(top: 18),
             child: txt(
               quiz == 0
-                  ? 'Você identificou o compromisso. A estratégia pode preservar uma reserva e reduzir outra contribuição. A duração da missão muda a importância dessa escolha.'
-                  : 'Reveja a comparação: reduzir uma operação pode economizar recursos, mas também diminuir sua contribuição. Tente explicar qual benefício tem um custo.',
+                  ? tr(
+                      'Você identificou o compromisso. A estratégia pode preservar uma reserva e reduzir outra contribuição. A duração da missão muda a importância dessa escolha.',
+                      'You identified the trade-off. A strategy can preserve one reserve and reduce another contribution. Mission duration changes how important that choice is.',
+                    )
+                  : tr(
+                      'Reveja a comparação: reduzir uma operação pode economizar recursos, mas também diminuir sua contribuição. Tente explicar qual benefício tem um custo.',
+                      'Revisit the comparison: reducing an operation can save resources, but it also lowers its contribution. Try to explain which benefit has a cost.',
+                    ),
               color: quiz == 0 ? green : accent,
               size: 15,
             ),
@@ -1507,8 +1825,10 @@ class _MissionPageState extends State<MissionPage> {
       'alternative': alternative.name,
       'alternativeOutcome': Simulation.run(alternative).state.toJson(),
       'reflectionAnswer': quiz,
-      'notice':
-          'Unidades e regras didáticas. Não representa missão ou dose real.',
+      'notice': tr(
+        'Unidades e regras didáticas. Não representa missão ou dose real.',
+        'Didactic units and rules. Does not represent a real mission or dose.',
+      ),
     };
     final uri =
         'data:application/json;charset=utf-8,${Uri.encodeComponent(const JsonEncoder.withIndent('  ').convert(report))}';
