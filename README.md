@@ -2,11 +2,16 @@
 
 Protótipo educativo em **Flutter web** para o desafio **Build a Junior Astronaut Mission Trainer**. O estudante registra uma expectativa, decide como administrar energia e cultivo em uma base marciana fictícia, observa o resultado e compara estratégias a partir do mesmo estado inicial.
 
+> **English summary — NASA Space Apps Challenge 2026, "Build a Junior Astronaut Mission Trainer".**
+> Base Aurora is a short, browser-based mission trainer for young learners. A dust event cuts solar power on a fictional Mars base; the learner records a prediction, chooses one of three strategies (conserve, use reserves, repair panels) and compares the outcomes on five connected indicators: energy, water, oxygen, food and exposure. A deterministic engine keeps every run reproducible, and the AURA assistant explains each result with curated NASA sources (ECLSS, Martian dust storms, Veggie, space radiation).
+> **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf) · **Run locally:** `flutter pub get && flutter run -d chrome`
+
 ![Arte conceitual da Base Aurora gerada com IA](assets/mars.png)
 
 ## Acessar e apresentar
 
 - [Abrir a demonstração pública](https://base-aurora.vercel.app/)
+- [Vídeo de demonstração (30 s, narração e legendas em inglês)](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
 - [PowerPoint editável](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
 - [Apresentação em PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
 - [Fluxo de deploy pelo GitHub](docs/VERCEL.md)
@@ -118,7 +123,7 @@ Não coletamos nomes, e-mail ou conversas pessoais de alunos. O estado é mantid
 
 Equipe Kera: Flora Rosa Pupo e Kevyn, conforme informações da equipe.
 
-Código e textos preparados com assistência de ChatGPT/Codex. A ilustração da landing foi gerada com OpenAI image generation e aparece como arte conceitual. Não é uma imagem de missão real. Os modelos 3D são geometrias criadas em código. Sem uso de logos, bandeiras ou identificadores de missão NASA.
+Código e textos preparados com assistência de ChatGPT/Codex. O vídeo de 30 s e o resumo em inglês deste README foram montados com assistência do Claude (Anthropic), a partir de uma gravação real do protótipo. A narração em inglês e a trilha do vídeo foram geradas com IA (ElevenLabs) e isso está sinalizado no próprio vídeo. A ilustração da landing foi gerada com OpenAI image generation e aparece como arte conceitual. Não é uma imagem de missão real. Os modelos 3D são geometrias criadas em código. Sem uso de logos, bandeiras ou identificadores de missão NASA.
 
 Three.js: licença MIT, incluída em `web/vendor/THREE-LICENSE.txt`. Flutter: projeto de código aberto. Fontes Manrope e Space Grotesk: licenças OFL em `assets/fonts/`. DejaVu Sans inclui licença em `assets/FONT-LICENSE.txt`. O código do projeto está sob [MIT](LICENSE). Dependências e materiais de terceiros mantêm suas próprias licenças.
 
@@ -134,4 +139,4 @@ Referências públicas:
 | Integrante | Equipe |
 | --- | --- |
 | [Flora Rosa Pupo](https://github.com/FloraRosaPupo) | Kera |
-| Kevyn | Kera |
+| [Kevyn](https://github.com/offkevyn) | Kera |
