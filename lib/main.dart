@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/material.dart' hide Simulation;
 import 'package:web/web.dart' as web;
@@ -17,6 +18,9 @@ const bg = Color(0xFF080D16),
     white = Color(0xFFF4F3EE),
     green = Color(0xFF8CCFAF);
 final knowledge = KnowledgeService();
+
+const demoVideoId = 'fEmvsGXurzI';
+const demoVideoUrl = 'https://youtu.be/fEmvsGXurzI';
 
 /// O HtmlElementView da cena 3D fica acima da camada de eventos do Flutter
 /// web, então modais desenhados sobre ele não recebem cliques. A cena é
@@ -69,7 +73,7 @@ class AuroraApp extends StatefulWidget {
 }
 
 class _AuroraAppState extends State<AuroraApp> {
-  bool playing = false;
+  bool playing = false, video = false;
   @override
   Widget build(BuildContext context) => ValueListenableBuilder<AppLang>(
     valueListenable: appLang,
@@ -111,7 +115,18 @@ class _AuroraAppState extends State<AuroraApp> {
       home: Scaffold(
         body: playing
             ? MissionPage(onExit: () => setState(() => playing = false))
-            : LandingPage(onStart: () => setState(() => playing = true)),
+            : video
+            ? VideoPage(
+                onBack: () => setState(() => video = false),
+                onStart: () => setState(() {
+                  video = false;
+                  playing = true;
+                }),
+              )
+            : LandingPage(
+                onStart: () => setState(() => playing = true),
+                onVideo: () => setState(() => video = true),
+              ),
       ),
     ),
   );
@@ -302,8 +317,8 @@ Future<void> sources(BuildContext context) async {
 }
 
 class LandingPage extends StatelessWidget {
-  final VoidCallback onStart;
-  const LandingPage({super.key, required this.onStart});
+  final VoidCallback onStart, onVideo;
+  const LandingPage({super.key, required this.onStart, required this.onVideo});
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, c) {
@@ -378,7 +393,14 @@ class LandingPage extends StatelessWidget {
                                   style: const TextStyle(color: white),
                                 ),
                               ),
-                              const SizedBox(width: 28),
+                              TextButton(
+                                onPressed: onVideo,
+                                child: Text(
+                                  tr('Vídeo (30 s)', 'Video (30 s)'),
+                                  style: const TextStyle(color: white),
+                                ),
+                              ),
+                              const SizedBox(width: 18),
                               outlineButton(
                                 tr('Iniciar missão', 'Start mission'),
                                 Icons.north_east,
@@ -390,6 +412,11 @@ class LandingPage extends StatelessWidget {
                           Row(
                             children: [
                               langSwitch(),
+                              IconButton(
+                                onPressed: onVideo,
+                                tooltip: tr('Ver o vídeo', 'Watch the video'),
+                                icon: const Icon(Icons.play_circle_outline),
+                              ),
                               IconButton(
                                 onPressed: () => sources(context),
                                 icon: const Icon(Icons.menu_book_outlined),
@@ -663,10 +690,21 @@ class LandingPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 40),
-                  outlineButton(
-                    tr('Abrir as fontes da missão', 'Open mission sources'),
-                    Icons.menu_book_outlined,
-                    () => sources(context),
+                  Wrap(
+                    spacing: 14,
+                    runSpacing: 12,
+                    children: [
+                      outlineButton(
+                        tr('Ver o vídeo', 'Watch the video'),
+                        Icons.play_circle_outline,
+                        onVideo,
+                      ),
+                      outlineButton(
+                        tr('Abrir as fontes da missão', 'Open mission sources'),
+                        Icons.menu_book_outlined,
+                        () => sources(context),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -738,6 +776,143 @@ class LandingPage extends StatelessWidget {
       ],
     ),
   );
+}
+
+class VideoPage extends StatelessWidget {
+  final VoidCallback onBack, onStart;
+  const VideoPage({super.key, required this.onBack, required this.onStart});
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, c) {
+      final small = c.maxWidth < 760;
+      final pad = small ? 24.0 : 64.0;
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(pad, 24, pad, 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  brand(onTap: onBack),
+                  Row(
+                    children: [
+                      langSwitch(),
+                      const SizedBox(width: 10),
+                      TextButton.icon(
+                        onPressed: onBack,
+                        icon: const Icon(Icons.arrow_back, size: 17),
+                        label: Text(tr('Voltar', 'Back')),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1, color: line),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: pad,
+                vertical: small ? 34 : 56,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  eyebrow(tr('VÍDEO DE DEMONSTRAÇÃO', 'DEMO VIDEO')),
+                  const SizedBox(height: 14),
+                  txt(
+                    tr(
+                      'A missão em 30 segundos.',
+                      'The mission in 30 seconds.',
+                    ),
+                    size: small ? 32 : 44,
+                    weight: FontWeight.w700,
+                    height: 1.1,
+                  ),
+                  const SizedBox(height: 16),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 720),
+                    child: txt(
+                      tr(
+                        'Gravação real do protótipo, com narração e legendas em inglês. Mostra a decisão, o resultado e a comparação entre estratégias.',
+                        'Real prototype footage with English narration and subtitles. It shows the decision, the outcome and the comparison between strategies.',
+                      ),
+                      color: muted,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 960),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: const AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: VideoEmbed(),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Wrap(
+                    spacing: 14,
+                    runSpacing: 12,
+                    children: [
+                      outlineButton(
+                        tr('Abrir no YouTube', 'Open on YouTube'),
+                        Icons.open_in_new,
+                        () => openLink(demoVideoUrl),
+                      ),
+                      FilledButton.icon(
+                        onPressed: onStart,
+                        icon: const Icon(Icons.arrow_forward, size: 18),
+                        label: Text(tr('Jogar agora', 'Play now')),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+class VideoEmbed extends StatefulWidget {
+  const VideoEmbed({super.key});
+  @override
+  State<VideoEmbed> createState() => _VideoEmbedState();
+}
+
+class _VideoEmbedState extends State<VideoEmbed> {
+  static int nextId = 0;
+  late final String viewType;
+  @override
+  void initState() {
+    super.initState();
+    viewType = 'aurora-video-${nextId++}';
+    final frame = web.HTMLIFrameElement()
+      ..src = 'https://www.youtube-nocookie.com/embed/$demoVideoId?rel=0'
+      ..title = tr(
+        'Vídeo de demonstração da Base Aurora',
+        'Base Aurora demo video',
+      );
+    frame.setAttribute(
+      'allow',
+      'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+    );
+    frame.setAttribute('allowfullscreen', '');
+    frame.setAttribute('loading', 'lazy');
+    frame.style
+      ..border = '0'
+      ..width = '100%'
+      ..height = '100%';
+    ui_web.platformViewRegistry.registerViewFactory(viewType, (_) => frame);
+  }
+
+  @override
+  Widget build(BuildContext context) => HtmlElementView(viewType: viewType);
 }
 
 class MissionPage extends StatefulWidget {

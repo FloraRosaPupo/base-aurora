@@ -2,7 +2,7 @@
 
 Educational prototype built with **Flutter web** for the **Build a Junior Astronaut Mission Trainer** challenge. Learners record an expectation, decide how to manage energy and food production on a fictional Mars base, observe the outcome, and compare strategies from the same initial state.
 
-> **Português:** [README.pt.md](README.pt.md) · **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
+> **Português:** [README.pt.md](README.pt.md) · **Live demo:** https://base-aurora.vercel.app · **30 s video:** [YouTube](https://youtu.be/fEmvsGXurzI) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
 
 ![Concept art of Base Aurora, generated with AI](assets/mars.png)
 
@@ -11,7 +11,8 @@ The interface is available in **Portuguese and English**. The language is detect
 ## Access and presentation
 
 - [Open the public demo](https://base-aurora.vercel.app/)
-- [Demo video (30 s, English narration and subtitles)](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
+- [Demo video (30 s, English narration and subtitles)](https://youtu.be/fEmvsGXurzI)
+- [Demo video MP4 backup](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
 - [Editable PowerPoint](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
 - [PDF presentation](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
 - [GitHub deploy workflow](docs/VERCEL.md)

@@ -4,14 +4,15 @@ Protótipo educativo em **Flutter web** para o desafio **Build a Junior Astronau
 
 > **English summary — NASA Space Apps Challenge 2026, "Build a Junior Astronaut Mission Trainer".**
 > Base Aurora is a short, browser-based mission trainer for young learners. A dust event cuts solar power on a fictional Mars base; the learner records a prediction, chooses one of three strategies (conserve, use reserves, repair panels) and compares the outcomes on five connected indicators: energy, water, oxygen, food and exposure. A deterministic engine keeps every run reproducible, and the AURA assistant explains each result with curated NASA sources (ECLSS, Martian dust storms, Veggie, space radiation).
-> **Full English README:** [README.md](README.md) · **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf) · **Run locally:** `flutter pub get && flutter run -d chrome`
+> **Full English README:** [README.md](README.md) · **Live demo:** https://base-aurora.vercel.app · **Vídeo (30 s):** [YouTube](https://youtu.be/fEmvsGXurzI) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf) · **Run locally:** `flutter pub get && flutter run -d chrome`
 
 ![Arte conceitual da Base Aurora gerada com IA](assets/mars.png)
 
 ## Acessar e apresentar
 
 - [Abrir a demonstração pública](https://base-aurora.vercel.app/)
-- [Vídeo de demonstração (30 s, narração e legendas em inglês)](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
+- [Vídeo de demonstração (30 s, narração e legendas em inglês)](https://youtu.be/fEmvsGXurzI)
+- [Vídeo de demonstração — MP4 reserva](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
 - [PowerPoint editável](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
 - [Apresentação em PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
 - [Fluxo de deploy pelo GitHub](docs/VERCEL.md)
