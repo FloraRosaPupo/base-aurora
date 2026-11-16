@@ -6,7 +6,7 @@ Protótipo educativo em **Flutter web** para o desafio **Build a Junior Astronau
 
 ## Acessar e apresentar
 
-- [Abrir a demonstração pública](https://base-aurora-kera.florapupo.chatgpt.site](https://base-aurora.vercel.app/)
+- [Abrir a demonstração pública](https://base-aurora.vercel.app/)
 - [PowerPoint editável](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
 - [Apresentação em PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
 - [Fluxo de deploy pelo GitHub](docs/VERCEL.md)
