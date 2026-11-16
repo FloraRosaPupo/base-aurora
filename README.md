@@ -1,40 +1,40 @@
-# Base Aurora — equipe Kera
+# Base Aurora — Team Kera
 
-Protótipo educativo em **Flutter web** para o desafio **Build a Junior Astronaut Mission Trainer**. O estudante registra uma expectativa, decide como administrar energia e cultivo em uma base marciana fictícia, observa o resultado e compara estratégias a partir do mesmo estado inicial.
+Educational prototype built with **Flutter web** for the **Build a Junior Astronaut Mission Trainer** challenge. Learners record an expectation, decide how to manage energy and food production on a fictional Mars base, observe the outcome, and compare strategies from the same initial state.
 
-> **English summary — NASA Space Apps Challenge 2026, "Build a Junior Astronaut Mission Trainer".**
-> Base Aurora is a short, browser-based mission trainer for young learners. A dust event cuts solar power on a fictional Mars base; the learner records a prediction, chooses one of three strategies (conserve, use reserves, repair panels) and compares the outcomes on five connected indicators: energy, water, oxygen, food and exposure. A deterministic engine keeps every run reproducible, and the AURA assistant explains each result with curated NASA sources (ECLSS, Martian dust storms, Veggie, space radiation).
-> **Full English README:** [README.en.md](README.en.md) · **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf) · **Run locally:** `flutter pub get && flutter run -d chrome`
+> **Português:** [README.pt.md](README.pt.md) · **Live demo:** https://base-aurora.vercel.app · **30 s video:** [docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4) · **Slides (7, English):** [PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
 
-![Arte conceitual da Base Aurora gerada com IA](assets/mars.png)
+![Concept art of Base Aurora, generated with AI](assets/mars.png)
 
-## Acessar e apresentar
+The interface is available in **Portuguese and English**. The language is detected from the browser on the first visit, can be switched in the header, and the choice is saved locally.
 
-- [Abrir a demonstração pública](https://base-aurora.vercel.app/)
-- [Vídeo de demonstração (30 s, narração e legendas em inglês)](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
-- [PowerPoint editável](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
-- [Apresentação em PDF](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
-- [Fluxo de deploy pelo GitHub](docs/VERCEL.md)
+## Access and presentation
 
-A apresentação tem 7 slides em inglês, captura real do protótipo, comparação das estratégias e links das fontes. O PowerPoint inclui transições de dissolução.
+- [Open the public demo](https://base-aurora.vercel.app/)
+- [Demo video (30 s, English narration and subtitles)](docs/apresentacao/Base_Aurora_Kera_Demo_30s.mp4)
+- [Editable PowerPoint](docs/apresentacao/Base_Aurora_Kera_Submissao.pptx)
+- [PDF presentation](docs/apresentacao/Base_Aurora_Kera_Submissao.pdf)
+- [GitHub deploy workflow](docs/VERCEL.md)
 
-## O que funciona
+The presentation has 7 slides in English, screenshots of the real prototype, a strategy comparison and source links. The PowerPoint includes dissolve transitions.
 
-- Landing page responsiva em português e inglês, com detecção do idioma do navegador, seletor PT/EN no cabeçalho, preferência salva, ciência, atribuições, entrada animada e aproximação gradual da arte de fundo.
-- Indicadores animados, sinalização na cena 3D e controle de pausa das animações. A preferência de movimento reduzido do navegador é respeitada.
-- Cena 3D WebGL com terreno, habitat, estufa, painéis e abrigo. Câmera orbital e seleção por toque/clique. Controles Flutter também permitem selecionar módulos.
-- Motor determinístico em Dart, com cinco indicadores e três estratégias.
-- Registro de recurso a preservar e custo esperado, antes de revelar resultados.
-- Balanço de energia verificável, comparação controlada e reflexão final.
-- Exportação local do registro da missão em JSON, sem coletar identificação.
-- AURA em modo local: busca lexical em sínteses científicas revisadas, explicações e links das referências recuperadas. Não usa um LLM sem configuração.
-- Backend Node opcional com recuperação lexical ponderada e geração via API compatível com Chat Completions. Validação de citações, recomputação dos resultados, limite de requisições e tempo de resposta.
+## What works
 
-O 3D usa **Three.js 0.180.0**, integrado ao Flutter por `HtmlElementView` e uma página local. Flutter controla a interface e o motor; JavaScript controla apenas a visualização. Não é o pacote Dart `three_js`. Os arquivos do renderer estão no projeto, sem CDN em execução.
+- Responsive landing page in Portuguese and English, with science, attributions, an entrance animation and a slow zoom on the background art.
+- Animated indicators, highlighting in the 3D scene and a pause control for animations. The browser's reduced-motion preference is respected.
+- WebGL 3D scene with terrain, habitat, greenhouse, solar panels and shelter. Orbital camera and click/tap selection. Flutter controls also allow selecting modules.
+- Deterministic engine in Dart, with five indicators and three strategies.
+- Learners record the resource they expect to preserve and the expected cost before results are revealed.
+- Verifiable energy balance, controlled comparison and a final reflection question.
+- Local JSON export of the mission log, without collecting personal identification.
+- AURA in local mode: lexical search over reviewed science summaries, explanations and links to the retrieved references. No LLM is used unless configured.
+- Optional Node backend with weighted lexical retrieval and generation through a Chat Completions-compatible API. Citation validation, server-side recomputation of outcomes, rate limiting and response-time limits.
 
-## Começar localmente sem chave de IA
+The 3D view uses **Three.js 0.180.0**, integrated with Flutter through `HtmlElementView` and a local page. Flutter controls the interface and the engine; JavaScript controls only the visualization. This is not the Dart `three_js` package. Renderer files ship with the project, with no CDN at runtime.
 
-Requer Flutter estável com Dart >= 3.8, e navegador moderno para a cena. WebGL2 oferece a renderização principal; sem ele, um renderer CPU projeta a mesma geometria 3D em Canvas 2D, com câmera orbital e seleção. Versão usada na compilação: Flutter 3.50.0 / Dart 3.14.0. Node >= 22 para o backend opcional.
+## Run locally without an AI key
+
+Requires stable Flutter with Dart >= 3.8 and a modern browser for the scene. WebGL2 provides the main rendering; without it, a CPU renderer projects the same 3D geometry onto Canvas 2D, with an orbital camera and selection. Version used for the build: Flutter 3.50.0 / Dart 3.14.0. Node >= 22 for the optional backend.
 
 ```sh
 git clone https://github.com/FloraRosaPupo/base-aurora.git
@@ -43,100 +43,102 @@ flutter pub get
 flutter run -d chrome --web-port 3000
 ```
 
-Para compilar:
+To build:
 
 ```sh
 flutter build web --release --output dist --no-wasm-dry-run
 ```
 
-Hospede **todos** os arquivos de `dist/`, incluindo `scene.html`, `scene.js`, `vendor/`, `assets/` e os arquivos Flutter/CanvasKit. O `base href` é `/`. Alterações de subdiretório exigem ajustar também o endereço da cena. A primeira compilação e o primeiro carregamento podem precisar dos artefatos oficiais do Flutter.
+Host **all** files from `dist/`, including `scene.html`, `scene.js`, `vendor/`, `assets/` and the Flutter/CanvasKit files. `base href` is `/`. Subdirectory deployments also require adjusting the scene URL. The first build and the first load may need the official Flutter artifacts.
 
-## Ativar geração com RAG
+## Enable generation with RAG
 
-O protótipo publicado usa o modo local revisado. Para ativar um modelo:
+The published prototype uses the reviewed local mode. To enable a model:
 
-1. Copie `backend/.env.example` para `backend/.env`, que não deve entrar no Git.
-2. Informe `LLM_API_KEY`, `LLM_BASE_URL` (URL base compatível) e `LLM_MODEL` do provedor disponível.
-3. Configure `ALLOWED_ORIGINS` com os endereços exatos do frontend, separados por vírgula.
-4. Inicie o backend:
+1. Copy `backend/.env.example` to `backend/.env`, which must not enter Git.
+2. Set `LLM_API_KEY`, `LLM_BASE_URL` (compatible base URL) and `LLM_MODEL` for the available provider.
+3. Set `ALLOWED_ORIGINS` to the exact frontend origins, separated by commas.
+4. Start the backend:
 
 ```sh
 node --env-file=backend/.env backend/server.mjs
 ```
 
-5. Rode/compile Flutter com a URL completa do endpoint:
+5. Run/build Flutter with the full endpoint URL:
 
 ```sh
 flutter run -d chrome --web-port 3000 --dart-define=AURA_API_URL=http://localhost:8787/commander/help
 ```
 
-Para um frontend hospedado em HTTPS, o endpoint também precisa de HTTPS. Nunca inclua chave do modelo em `--dart-define`, no código Flutter ou no navegador.
+For an HTTPS-hosted frontend, the endpoint also needs HTTPS. Never include the model key in `--dart-define`, in Flutter code or in the browser.
 
-O backend recupera documentos em `assets/knowledge.json` e envia contexto, expectativa e evidências ao modelo. Antes da decisão, não envia o resultado reservado. Depois, recalcula o resultado no servidor. Somente citações de fontes recuperadas são aceitas. O modelo não altera recursos. Em falha de rede/modelo, Flutter recorre ao modo local e o identifica.
+The backend retrieves documents from `assets/knowledge.json` and sends context, expectation and evidence to the model. Before the decision, it does not send the withheld outcome. After it, the result is recomputed on the server. Only citations from retrieved sources are accepted. The model does not change resources. On network or model failure, Flutter falls back to local mode and says so.
 
-**O que isso não comprova:** não houve ativação de provedor externo nem avaliação de qualidade generativa com chave real. Não há embeddings ou pgvector implementados nesta versão. A recuperação lexical é um recorte funcional para um corpus pequeno. A migração para busca vetorial é uma evolução posterior.
+**What this does not prove:** no external provider was activated and generative quality has not been evaluated with a real key. Embeddings or pgvector are not implemented in this version. Lexical retrieval is a functional fit for a small corpus. Migrating to vector search is a later step.
 
-## Ciência e limitações
+## Science and limitations
 
-As fontes estão em `assets/knowledge.json`, com URLs e sínteses autorais revisadas. Não são cópias integrais dos documentos ou dados de telemetria.
+Sources live in `assets/knowledge.json`, with URLs and original reviewed summaries. They are not full copies of the documents or telemetry data.
 
-- NASA, ECLSS: recuperação de água, revitalização do ar e geração de oxigênio na ISS.
-- NASA, Martian Dust Storms: poeira e geração solar.
-- NASA Science, VEGGIE: estudos de cultivo e complementação alimentar na ISS.
-- NASA, Space Radiation: riscos da radiação para exploração humana.
+- NASA, ECLSS: water recovery, air revitalization and oxygen generation on the ISS.
+- NASA, Martian Dust Storms: dust and solar power.
+- NASA Science, VEGGIE: crop studies and food supplementation on the ISS.
+- NASA, Space Radiation: radiation risks for human exploration.
 
-O jogo usa **unidades didáticas**, períodos comprimidos e plantas estabelecidas. Exposição é um índice de jogo, não dose médica. As constantes de manutenção, produção e consumo são escolhas de balanceamento, não parâmetros certificados pela NASA. Materiais da ISS fundamentam princípios e não validam um habitat humano em Marte.
+The game uses **didactic units**, compressed periods and established plants. Exposure is a game index, not a medical dose. Maintenance, production and consumption constants are balancing choices, not NASA-certified parameters. ISS materials support principles and do not validate a human habitat on Mars.
 
-As três estratégias são viáveis no estado inicial e têm compromissos diferentes. Em uma partida com configuração de recursos diferente, o motor permite detectar falha sem esconder o déficit.
+All three strategies are viable from the initial state and carry different trade-offs. With a different resource configuration, the engine can detect failure without hiding the deficit.
 
-Antes da submissão, a equipe deve confirmar que pelo menos um recurso efetivamente usado pertence à lista Resources do desafio e que atende às regras vigentes. Não há confirmação de elegibilidade, cadastro da equipe ou submissão automática.
+Before submitting, the team must confirm that at least one resource actually used belongs to the challenge's Resources list and complies with the current rules. There is no confirmation of eligibility, team registration or automatic submission.
 
-## Estrutura
+## Structure
 
-- `lib/features/mission/domain/`: estado, estratégias e regras puras.
-- `lib/features/base_scene/`: integração de visualização Flutter/iframe.
-- `lib/features/commander/`: recuperação local e cliente do backend.
-- `lib/main.dart`: landing, jornada, controles e comparação.
-- `web/scene.*`, `web/vendor/`: cena 3D e renderer local.
-- `assets/knowledge.json`: fontes e sínteses científicas.
-- `backend/`: recuperação, geração opcional, HTTP e testes.
-- `test/simulation_test.dart`: invariantes do motor.
+- `lib/features/mission/domain/`: state, strategies and pure rules.
+- `lib/features/base_scene/`: Flutter/iframe visualization integration.
+- `lib/features/commander/`: local retrieval and backend client.
+- `lib/i18n.dart`: app language state and translation helper.
+- `lib/main.dart`: landing, journey, controls and comparison.
+- `web/scene.*`, `web/vendor/`: 3D scene and local renderer.
+- `assets/knowledge.json`: scientific sources and summaries.
+- `backend/`: retrieval, optional generation, HTTP and tests.
+- `test/simulation_test.dart`: engine invariants.
 
-## Testar sem consumir IA
+## Test without consuming AI
 
 ```sh
 flutter test test/simulation_test.dart
 node --test backend/test/*.test.mjs
 ```
 
-Testes cobrem balanço, determinismo, compromissos, estado inicial preservado, exposição, recursos insuficientes e validação de fontes/entrada do backend. Verificados nesta entrega: build web release; 8 testes Dart; 8 testes Node; landing, câmera orbital no modo 3D por CPU, expectativa, resultado, comparação, fontes da AURA e reflexão final em Chrome. O ambiente de teste não disponibilizou WebGL, então a renderização por GPU permanece sem validação visual. Isso não equivale a validação científica ou estudo de eficácia educativa.
+Tests cover balance, determinism, trade-offs, preserved initial state, exposure, insufficient resources and backend source/input validation. Verified in this delivery: release web build; 8 Dart tests; 8 Node tests; landing, orbital camera in CPU 3D mode, expectation, outcome, comparison, AURA sources and final reflection in Chrome. The test environment did not provide WebGL, so GPU rendering remains visually unverified. This is not equivalent to scientific validation or an educational efficacy study.
 
-Não coletamos nomes, e-mail ou conversas pessoais de alunos. O estado é mantido na memória da sessão e pode ser exportado pelo usuário. Ao configurar um provedor de IA, o contexto enviado ao backend pode ser processado por esse provedor; escolha e documente esse serviço antes de usar com alunos.
+We do not collect names, emails or personal conversations from learners. State is kept in session memory and can be exported by the user. If an AI provider is configured, context sent to the backend may be processed by that provider; choose and document that service before using it with students.
 
-## Contribuir e acompanhar
+## Contributing and docs
 
-- [Como contribuir](CONTRIBUTING.md) e [segurança](SECURITY.md).
-- [Arquitetura](docs/ARCHITECTURE.md), [ambiente](docs/ENVIRONMENT.md) e [validação](docs/VALIDATION.md).
-- [Ciência e simplificações](docs/SCIENCE.md), [roadmap](docs/ROADMAP.md) e [deploy Vercel](docs/VERCEL.md).
+- [Contributing](CONTRIBUTING.md) and [security](SECURITY.md).
+- [Architecture](docs/ARCHITECTURE.md), [environment](docs/ENVIRONMENT.md) and [validation](docs/VALIDATION.md).
+- [Science and simplifications](docs/SCIENCE.md), [roadmap](docs/ROADMAP.md) and [Vercel deploy](docs/VERCEL.md).
 
-## Atribuições e uso de IA
+## Attribution and AI use
 
-Equipe Kera: Flora Rosa Pupo e Kevyn, conforme informações da equipe.
+Team Kera: Flora Rosa Pupo and Kevyn, as provided by the team.
 
-Código e textos preparados com assistência de ChatGPT/Codex. O vídeo de 30 s e o resumo em inglês deste README foram montados com assistência do Claude (Anthropic), a partir de uma gravação real do protótipo. A narração em inglês e a trilha do vídeo foram geradas com IA (ElevenLabs) e isso está sinalizado no próprio vídeo. A ilustração da landing foi gerada com OpenAI image generation e aparece como arte conceitual. Não é uma imagem de missão real. Os modelos 3D são geometrias criadas em código. Sem uso de logos, bandeiras ou identificadores de missão NASA.
+Code and text were prepared with assistance from ChatGPT/Codex. The 30 s video and the English summary were assembled with assistance from Claude (Anthropic) from a real recording of the prototype. English narration and soundtrack were AI-generated (ElevenLabs) and this is labeled in the video itself. The landing illustration was generated with OpenAI image generation and is presented as conceptual art. It is not an image of a real mission. The 3D models are geometries created in code. No NASA logos, flags or mission identifiers are used.
 
-Three.js: licença MIT, incluída em `web/vendor/THREE-LICENSE.txt`. Flutter: projeto de código aberto. Fontes Manrope e Space Grotesk: licenças OFL em `assets/fonts/`. DejaVu Sans inclui licença em `assets/FONT-LICENSE.txt`. O código do projeto está sob [MIT](LICENSE). Dependências e materiais de terceiros mantêm suas próprias licenças.
+Three.js: MIT license, included in `web/vendor/THREE-LICENSE.txt`. Flutter: open-source project. Manrope and Space Grotesk fonts: OFL licenses in `assets/fonts/`. DejaVu Sans license in `assets/FONT-LICENSE.txt`. The project code is under [MIT](LICENSE). Dependencies and third-party materials keep their own licenses.
 
-Referências públicas:
+Public references:
+
 - https://www.spaceappschallenge.org/2026/challenges/junior-astronaut-mission-trainer/
 - https://www.nasa.gov/reference/environmental-control-and-life-support-systems-eclss/
 - https://www.nasa.gov/solar-system/the-fact-and-fiction-of-martian-dust-storms/
 - https://science.nasa.gov/mission/veggie/
 - https://www.nasa.gov/hrp/hazard-space-radiation/
 
-## Autores
+## Authors
 
-| Integrante | Equipe |
+| Member | Team |
 | --- | --- |
 | [Flora Rosa Pupo](https://github.com/FloraRosaPupo) | Kera |
 | [Kevyn](https://github.com/offkevyn) | Kera |
