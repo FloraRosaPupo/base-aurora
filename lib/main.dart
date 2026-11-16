@@ -16,6 +16,12 @@ const bg = Color(0xFF080D16),
     white = Color(0xFFF4F3EE),
     green = Color(0xFF8CCFAF);
 final knowledge = KnowledgeService();
+
+/// O HtmlElementView da cena 3D fica acima da camada de eventos do Flutter
+/// web, então modais desenhados sobre ele não recebem cliques. A cena é
+/// ocultada enquanto um modal está aberto.
+final sceneCovered = ValueNotifier(false);
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await knowledge.load();
@@ -140,71 +146,76 @@ void openLink(String url) {
   web.window.open(url, '_blank', 'noopener,noreferrer');
 }
 
-void sources(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: surface,
-    showDragHandle: true,
-    builder: (context) => ConstrainedBox(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height * .85,
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            eyebrow('CIÊNCIA E TRANSPARÊNCIA'),
-            const SizedBox(height: 12),
-            txt(
-              'A ciência por trás da missão',
-              size: 27,
-              weight: FontWeight.bold,
-            ),
-            const SizedBox(height: 12),
-            txt(
-              'Sínteses revisadas de referências públicas da NASA. O jogo usa unidades didáticas e não representa uma missão real ou dose médica. Fontes da ISS explicam princípios, não uma base marciana existente.',
-              color: muted,
-            ),
-            const SizedBox(height: 22),
-            ...knowledge.corpus.map(
-              (s) => Padding(
-                padding: const EdgeInsets.only(bottom: 22),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    txt(s.title, size: 19, weight: FontWeight.bold),
-                    const SizedBox(height: 6),
-                    txt(s.text, color: muted),
-                    TextButton.icon(
-                      onPressed: () => openLink(s.url),
-                      label: Text(s.source),
-                      icon: const Icon(Icons.open_in_new, size: 14),
-                    ),
-                  ],
+Future<void> sources(BuildContext context) async {
+  sceneCovered.value = true;
+  try {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: surface,
+      showDragHandle: true,
+      builder: (context) => ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.sizeOf(context).height * .85,
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(28),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              eyebrow('CIÊNCIA E TRANSPARÊNCIA'),
+              const SizedBox(height: 12),
+              txt(
+                'A ciência por trás da missão',
+                size: 27,
+                weight: FontWeight.bold,
+              ),
+              const SizedBox(height: 12),
+              txt(
+                'Sínteses revisadas de referências públicas da NASA. O jogo usa unidades didáticas e não representa uma missão real ou dose médica. Fontes da ISS explicam princípios, não uma base marciana existente.',
+                color: muted,
+              ),
+              const SizedBox(height: 22),
+              ...knowledge.corpus.map(
+                (s) => Padding(
+                  padding: const EdgeInsets.only(bottom: 22),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      txt(s.title, size: 19, weight: FontWeight.bold),
+                      const SizedBox(height: 6),
+                      txt(s.text, color: muted),
+                      TextButton.icon(
+                        onPressed: () => openLink(s.url),
+                        label: Text(s.source),
+                        icon: const Icon(Icons.open_in_new, size: 14),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const Divider(color: line),
-            txt(
-              'AURA usa explicações locais revisadas nesta versão. A geração com modelo pode ser ativada por um backend configurado. A ilustração da página inicial foi gerada com IA. Os módulos 3D são geometrias criadas para esta simulação.',
-              size: 13,
-              color: muted,
-            ),
-            const SizedBox(height: 20),
-            outlineButton(
-              'Ver desafio oficial',
-              Icons.open_in_new,
-              () => openLink(
-                'https://www.spaceappschallenge.org/2026/challenges/junior-astronaut-mission-trainer/',
+              const Divider(color: line),
+              txt(
+                'AURA usa explicações locais revisadas nesta versão. A geração com modelo pode ser ativada por um backend configurado. A ilustração da página inicial foi gerada com IA. Os módulos 3D são geometrias criadas para esta simulação.',
+                size: 13,
+                color: muted,
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              outlineButton(
+                'Ver desafio oficial',
+                Icons.open_in_new,
+                () => openLink(
+                  'https://www.spaceappschallenge.org/2026/challenges/junior-astronaut-mission-trainer/',
+                ),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
-  );
+    );
+  } finally {
+    sceneCovered.value = false;
+  }
 }
 
 class LandingPage extends StatelessWidget {
@@ -631,83 +642,88 @@ class _MissionPageState extends State<MissionPage> {
 
   Future<void> aura(String intent) async {
     final future = knowledge.ask(intent, choice, expectation, result != null);
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      isScrollControlled: true,
-      backgroundColor: surface,
-      builder: (context) => ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.sizeOf(context).height * .85,
-        ),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              eyebrow('COMANDANTE AURA'),
-              const SizedBox(height: 12),
-              txt(
-                intent == 'hint'
-                    ? 'Uma pista para pensar'
-                    : intent == 'science'
-                    ? 'O que a ciência explica'
-                    : 'Sua decisão, explicada',
-                size: 26,
-                weight: FontWeight.bold,
-              ),
-              const SizedBox(height: 20),
-              FutureBuilder<AuraAnswer>(
-                future: future,
-                builder: (context, s) {
-                  if (!s.hasData)
-                    return const Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Center(
-                        child: CircularProgressIndicator(color: accent),
-                      ),
-                    );
-                  final a = s.data!;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      txt(a.text, size: 17),
-                      const SizedBox(height: 24),
-                      eyebrow('REFERÊNCIAS RECUPERADAS'),
-                      const SizedBox(height: 10),
-                      ...a.sources.map(
-                        (s) => ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: txt(
-                            s.title,
-                            size: 15,
-                            weight: FontWeight.bold,
-                          ),
-                          subtitle: txt(s.source, size: 12, color: muted),
-                          trailing: const Icon(
-                            Icons.open_in_new,
-                            size: 17,
-                            color: accent,
-                          ),
-                          onTap: () => openLink(s.url),
+    sceneCovered.value = true;
+    try {
+      await showModalBottomSheet(
+        context: context,
+        showDragHandle: true,
+        isScrollControlled: true,
+        backgroundColor: surface,
+        builder: (context) => ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(context).height * .85,
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                eyebrow('COMANDANTE AURA'),
+                const SizedBox(height: 12),
+                txt(
+                  intent == 'hint'
+                      ? 'Uma pista para pensar'
+                      : intent == 'science'
+                      ? 'O que a ciência explica'
+                      : 'Sua decisão, explicada',
+                  size: 26,
+                  weight: FontWeight.bold,
+                ),
+                const SizedBox(height: 20),
+                FutureBuilder<AuraAnswer>(
+                  future: future,
+                  builder: (context, s) {
+                    if (!s.hasData)
+                      return const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Center(
+                          child: CircularProgressIndicator(color: accent),
                         ),
-                      ),
-                      const Divider(color: line),
-                      txt(
-                        a.mode +
-                            ' · A consulta não altera os recursos da missão.',
-                        size: 12,
-                        color: muted,
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
+                      );
+                    final a = s.data!;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        txt(a.text, size: 17),
+                        const SizedBox(height: 24),
+                        eyebrow('REFERÊNCIAS RECUPERADAS'),
+                        const SizedBox(height: 10),
+                        ...a.sources.map(
+                          (s) => ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: txt(
+                              s.title,
+                              size: 15,
+                              weight: FontWeight.bold,
+                            ),
+                            subtitle: txt(s.source, size: 12, color: muted),
+                            trailing: const Icon(
+                              Icons.open_in_new,
+                              size: 17,
+                              color: accent,
+                            ),
+                            onTap: () => openLink(s.url),
+                          ),
+                        ),
+                        const Divider(color: line),
+                        txt(
+                          a.mode +
+                              ' · A consulta não altera os recursos da missão.',
+                          size: 12,
+                          color: muted,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } finally {
+      sceneCovered.value = false;
+    }
   }
 
   @override
@@ -757,28 +773,31 @@ class _MissionPageState extends State<MissionPage> {
                           ),
                           IconButton(
                             tooltip: 'Reiniciar missão',
-                            onPressed: () => showDialog(
-                              context: context,
-                              builder: (c) => AlertDialog(
-                                title: const Text('Reiniciar a missão?'),
-                                content: const Text(
-                                  'As escolhas desta sessão serão apagadas.',
+                            onPressed: () async {
+                              sceneCovered.value = true;
+                              final restart = await showDialog<bool>(
+                                context: context,
+                                builder: (c) => AlertDialog(
+                                  title: const Text('Reiniciar a missão?'),
+                                  content: const Text(
+                                    'As escolhas desta sessão serão apagadas.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(c, false),
+                                      child: const Text('Continuar missão'),
+                                    ),
+                                    FilledButton(
+                                      onPressed: () => Navigator.pop(c, true),
+                                      child: const Text('Reiniciar'),
+                                    ),
+                                  ],
                                 ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(c),
-                                    child: const Text('Continuar missão'),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () {
-                                      Navigator.pop(c);
-                                      reset();
-                                    },
-                                    child: const Text('Reiniciar'),
-                                  ),
-                                ],
-                              ),
-                            ),
+                              );
+                              sceneCovered.value = false;
+                              if (restart == true) reset();
+                            },
                             icon: const Icon(Icons.refresh, size: 21),
                           ),
                         ],
@@ -966,12 +985,32 @@ class _MissionPageState extends State<MissionPage> {
         ),
         SizedBox(
           height: 390,
-          child: BaseScene(
-            key: ValueKey(session),
-            selected: selected,
-            strategy: result?.strategy.name ?? 'normal',
-            motion: motion,
-            onSelect: (id) => setState(() => selected = id),
+          child: ValueListenableBuilder<bool>(
+            valueListenable: sceneCovered,
+            builder: (context, covered, scene) => Stack(
+              fit: StackFit.expand,
+              children: [
+                if (covered)
+                  ColoredBox(
+                    color: surface,
+                    child: Center(
+                      child: txt(
+                        'Cena 3D pausada enquanto o diálogo está aberto',
+                        size: 12,
+                        color: muted,
+                      ),
+                    ),
+                  ),
+                Offstage(offstage: covered, child: scene),
+              ],
+            ),
+            child: BaseScene(
+              key: ValueKey(session),
+              selected: selected,
+              strategy: result?.strategy.name ?? 'normal',
+              motion: motion,
+              onSelect: (id) => setState(() => selected = id),
+            ),
           ),
         ),
         Padding(
